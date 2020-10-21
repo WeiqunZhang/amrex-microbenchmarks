@@ -4,6 +4,20 @@
 
 using namespace amrex;
 
+static void test (MultiFab& mfa, MultiFab const& mfb)
+{
+    for (MFIter mfi(mfa); mfi.isValid(); ++mfi) {
+        const Box& bx = mfi.validbox();
+        Array4<Real const> const& b = mfb.const_array(mfi);
+        Array4<Real> const& a = mfa.array(mfi);
+        BL_PROFILE("daxpy"); // for NVIDIA Nsight Compute
+        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        {
+            a(i,j,k) = a(i,j,k) + 0.5*b(i,j,k);
+        });
+    }
+}
+
 int main(int argc, char* argv[])
 {
     amrex::Initialize(argc,argv);
@@ -24,18 +38,15 @@ int main(int argc, char* argv[])
         MultiFab mfb(ba,dm,1,0);
         mfa.setVal(1.0);
         mfb.setVal(2.0);
+#ifdef AMREX_USE_DPCPP
         {
-            BL_PROFILE_REGION("daxpy-256");
-            for (MFIter mfi(mfa); mfi.isValid(); ++mfi) {
-                const Box& bx = mfi.validbox();
-                Array4<Real const> const& b = mfb.const_array(mfi);
-                Array4<Real> const& a = mfa.array(mfi);
-                BL_PROFILE("daxpy");
-                amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-                {
-                    a(i,j,k) = a(i,j,k) + 0.5*b(i,j,k);
-                });
-            }
+            BL_PROFILE("daxpy-warmup");
+            test(mfa, mfb);
+        }
+#endif
+        {
+            BL_PROFILE("daxpy-mf");
+            test(mfa, mfb);
         }
     }
     amrex::Finalize();
