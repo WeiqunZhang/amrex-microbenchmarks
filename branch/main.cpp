@@ -51,12 +51,10 @@ int main(int argc, char* argv[])
                 a(i,j,k) = amrex::Random(engine) + 0.5;
             });
         }
-#ifdef AMREX_USE_DPCPP
         {
             BL_PROFILE("branch-warmup");
             test(mf);
         }
-#endif
         {
             BL_PROFILE("branch-mf");
             test(mf);

@@ -5,25 +5,6 @@
 
 using namespace amrex;
 
-static void test (MultiFab& mf)
-{
-    for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
-        const Box& bx = mfi.validbox();
-        Array4<Real> const& a = mf.array(mfi);
-        BL_PROFILE("compute_bound"); // for NVIDIA Nsight compute
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
-        {
-            Real y = a(i,j,k);
-            Real x = 1.0;
-            for (int n = 0; n < 20; ++n) {
-                Real dx = -(x*x-y) / (2.*x);
-                x += dx;
-            }
-            a(i,j,k) = x;
-        });
-    }
-}
-
 int main(int argc, char* argv[])
 {
     amrex::Initialize(argc,argv);
@@ -47,16 +28,16 @@ int main(int argc, char* argv[])
             amrex::ParallelForRNG(bx,
             [=] AMREX_GPU_DEVICE (int i, int j, int k, RandomEngine const& engine)
             {
-                a(i,j,k) = amrex::Random(engine) + 0.5;
+                a(i,j,k) = amrex::Random(engine) + 0.5_rt;
             });
         }
         {
-            BL_PROFILE("compute_bound-warmup");
-            test(mf);
+            BL_PROFILE("reduce-warmup");
+            mf.max(0);
         }
         {
-            BL_PROFILE("compute_bound-mf");
-            test(mf);
+            BL_PROFILE("reduce-mf");
+            mf.max(0);
         }
     }
     amrex::Finalize();

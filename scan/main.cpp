@@ -32,12 +32,10 @@ int main(int argc, char* argv[])
         iMultiFab mfb(ba,dm,1,0);
         mfa.setVal(1);
         mfb.setVal(1);
-#ifdef AMREX_USE_DPCPP
         {
             BL_PROFILE("scan-warmup");
             test(mfa,mfb);
         }
-#endif
         {
             BL_PROFILE("scan-mf");
             test(mfa,mfb);

@@ -38,12 +38,10 @@ int main(int argc, char* argv[])
         MultiFab mfb(ba,dm,1,0);
         mfa.setVal(1.0);
         mfb.setVal(2.0);
-#ifdef AMREX_USE_DPCPP
         {
             BL_PROFILE("daxpy-warmup");
             test(mfa, mfb);
         }
-#endif
         {
             BL_PROFILE("daxpy-mf");
             test(mfa, mfb);

@@ -31,12 +31,10 @@ int main(int argc, char* argv[])
                 a(i,j,k) = amrex::Random(engine) + 0.5_rt;
             });
         }
-#ifdef AMREX_USE_DPCPP
         {
             BL_PROFILE("reduce-warmup");
             mf.sum();
         }
-#endif
         {
             BL_PROFILE("reduce-mf");
             mf.sum();
