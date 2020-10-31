@@ -1,0 +1,9 @@
+nohup.out
+*.[oa]
+*.ex
+*.ex.dSYM
+*.exe
+*.exe.dSYM
+*~
+tmp_build_dir/
+Backtrace.*
