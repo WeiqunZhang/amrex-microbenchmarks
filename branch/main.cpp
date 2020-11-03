@@ -27,6 +27,7 @@ static void test (MultiFab& mf)
 
 int main(int argc, char* argv[])
 {
+    amrex::Real t;
     amrex::Initialize(argc,argv);
     {
         BL_PROFILE("main()");
@@ -57,8 +58,11 @@ int main(int argc, char* argv[])
         }
         {
             BL_PROFILE("branch-mf");
+            amrex::Real t0 = amrex::second();
             test(mf);
+            t = amrex::second()-t0;
         }
     }
     amrex::Finalize();
+    std::cout << "Kernel run time is " << std::scientific << t << ".\n";
 }

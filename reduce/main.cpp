@@ -7,6 +7,7 @@ using namespace amrex;
 
 int main(int argc, char* argv[])
 {
+    amrex::Real t;
     amrex::Initialize(argc,argv);
     {
         BL_PROFILE("main()");
@@ -37,8 +38,11 @@ int main(int argc, char* argv[])
         }
         {
             BL_PROFILE("reduce-mf");
+            amrex::Real t0 = amrex::second();
             mf.sum();
+            t = amrex::second()-t0;
         }
     }
     amrex::Finalize();
+    std::cout << "Kernel run time is " << std::scientific << t << ".\n";
 }

@@ -14,6 +14,7 @@ static void test (iMultiFab& mfa, iMultiFab& mfb)
 
 int main(int argc, char* argv[])
 {
+    amrex::Real t;
     amrex::Initialize(argc,argv);
     {
         BL_PROFILE("main()");
@@ -38,8 +39,11 @@ int main(int argc, char* argv[])
         }
         {
             BL_PROFILE("scan-mf");
+            amrex::Real t0 = amrex::second();
             test(mfa,mfb);
+            t = amrex::second()-t0;
         }
     }
     amrex::Finalize();
+    std::cout << "Kernel run time is " << std::scientific << t << ".\n";
 }

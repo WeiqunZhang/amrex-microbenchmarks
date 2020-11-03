@@ -26,6 +26,7 @@ static void test (MultiFab const& rhs, MultiFab& mfa, MultiFab& mfb)
 
 int main(int argc, char* argv[])
 {
+    amrex::Real t;
     amrex::Initialize(argc,argv);
     {
         BL_PROFILE("main()");
@@ -52,8 +53,11 @@ int main(int argc, char* argv[])
         }
         {
             BL_PROFILE("jacobi-mf");
+            amrex::Real t0 = amrex::second();
             test(rhs, mfa, mfb);
+            t = amrex::second()-t0;
         }
     }
     amrex::Finalize();
+    std::cout << "Kernel run time is " << std::scientific << t << ".\n";
 }
