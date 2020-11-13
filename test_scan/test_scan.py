@@ -32,6 +32,6 @@ while time.perf_counter() < tmax:
     t1 = time.perf_counter()
     if (t1-t0 > args.report*60):
         t0 = t1
-        print("After", (t1-tstart)/60., "minutes", ntests_pass, "out of", ntests_total, "tests passed")
+        print("After", int((t1-tstart)/60.), "minutes", ntests_pass, "out of", ntests_total, "tests passed")
 
 print("Final:", ntests_pass, "out of", ntests_total, "tests passed")
