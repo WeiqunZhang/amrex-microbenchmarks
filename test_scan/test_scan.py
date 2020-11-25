@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-#!/usr/bin/env python
-
 import argparse, os, random, subprocess, sys, time
 
 if len(sys.argv) < 2:
