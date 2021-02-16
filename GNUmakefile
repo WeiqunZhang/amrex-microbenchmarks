@@ -28,6 +28,8 @@ ifeq ($(strip $(programs)),)
   programs += jacobi/main
   programs += jacobi_sync/main
   programs += jacobi_elixir/main
+  programs += aos_simple/main
+  programs += aos_shared/main
 endif
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs

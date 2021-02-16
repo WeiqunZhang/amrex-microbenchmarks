@@ -18,7 +18,9 @@ tests  = [{'name':'mb'     ,'dir':'daxpy'        ,'time':[]},
           {'name':'scn'    ,'dir':'scan'         ,'time':[]},
           {'name':'jac'    ,'dir':'jacobi'       ,'time':[]},
           {'name':'jsy'    ,'dir':'jacobi_sync'  ,'time':[]},
-          {'name':'jex'    ,'dir':'jacobi_elixir','time':[]}]
+          {'name':'jex'    ,'dir':'jacobi_elixir','time':[]},
+          {'name':'aos smp','dir':'aos_simple'   ,'time':[]},
+          {'name':'aos sha','dir':'aos_shared'   ,'time':[]}]
 
 max_grid_size = ['256','128','64','32']
 ntrys = 3
