@@ -28,6 +28,7 @@ ifeq ($(strip $(programs)),)
   programs += jacobi/main
   programs += jacobi_sync/main
   programs += jacobi_elixir/main
+  programs += jacobi_memorypool/main
   programs += aos_simple/main
   programs += aos_shared/main
 endif

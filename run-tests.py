@@ -19,6 +19,7 @@ tests  = [{'name':'mb'     ,'dir':'daxpy'        ,'time':[]},
           {'name':'jac'    ,'dir':'jacobi'       ,'time':[]},
           {'name':'jsy'    ,'dir':'jacobi_sync'  ,'time':[]},
           {'name':'jex'    ,'dir':'jacobi_elixir','time':[]},
+          {'name':'jmp'    ,'dir':'jacobi_memorypool','time':[]},
           {'name':'aos smp','dir':'aos_simple'   ,'time':[]},
           {'name':'aos sha','dir':'aos_shared'   ,'time':[]}]
 
