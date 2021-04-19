@@ -8,6 +8,7 @@ if len(sys.argv) < 2:
 parser = argparse.ArgumentParser(description="GPU tests")
 parser.add_argument("--device", type=str, default="", choices=['cuda','hip','dpcpp'])
 parser.add_argument("--single_precision", action="store_true")
+parser.add_argument("--clean", action="store_true")
 args = parser.parse_args(sys.argv[1:])
 
 tests  = [{'name':'mb'     ,'dir':'daxpy'        ,'time':[]},
@@ -27,6 +28,17 @@ max_grid_size = ['256','128','64','32']
 ntrys = 3
 
 TOP = os.getcwd()
+
+if args.clean:
+    for test in tests:
+        os.chdir(os.path.join(TOP,test['dir']))
+        command = 'make clean'
+        p0 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              shell=True)
+        stdout0, stderr0 = p0.communicate()
+        p0.stdout.close()
+        p0.stderr.close()
+    sys.exit(0)
 
 command = 'make '
 if (args.device == 'cuda'):
