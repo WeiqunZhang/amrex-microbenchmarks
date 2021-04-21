@@ -8,12 +8,17 @@ using namespace amrex;
 static void test (iMultiFab& mfa, iMultiFab& mfb)
 {
     for (MFIter mfi(mfa); mfi.isValid(); ++mfi) {
+#if 0
+        Scan::ExclusiveSum(mfi.fabbox().numPts(), mfb[mfi].dataPtr(), mfa[mfi].dataPtr(),
+                           Scan::noRetSum);
+#else
         auto pi = mfb[mfi].dataPtr();
         auto po = mfa[mfi].dataPtr();
         Scan::PrefixSum<int>(mfi.fabbox().numPts(),
                              [=] AMREX_GPU_DEVICE (int i) -> int { return pi[i]; },
                              [=] AMREX_GPU_DEVICE (int i, int ps) { po[i] = ps; },
                              Scan::Type::exclusive, Scan::noRetSum);
+#endif
     }
 }
 
