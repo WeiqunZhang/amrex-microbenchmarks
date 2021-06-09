@@ -22,7 +22,8 @@ tests  = [{'name':'mb'     ,'dir':'daxpy'        ,'time':[]},
           {'name':'jex'    ,'dir':'jacobi_elixir','time':[]},
           {'name':'jmp'    ,'dir':'jacobi_memorypool','time':[]},
           {'name':'aos smp','dir':'aos_simple'   ,'time':[]},
-          {'name':'aos sha','dir':'aos_shared'   ,'time':[]}]
+          {'name':'aos sha','dir':'aos_shared'   ,'time':[]},
+          {'name':'gsrb'   ,'dir':'gsrb'         ,'time':[]}]
 
 max_grid_size = ['256','128','64','32']
 ntrys = 3

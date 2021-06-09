@@ -31,6 +31,7 @@ ifeq ($(strip $(programs)),)
   programs += jacobi_memorypool/main
   programs += aos_simple/main
   programs += aos_shared/main
+  programs += gsrb/main
 endif
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
@@ -39,5 +40,6 @@ multiple_executables = $(addsuffix .$(machineSuffix).ex, $(programs))
 default: $(multiple_executables)
 
 include $(AMREX_HOME)/Src/Base/Make.package
+include $(AMREX_HOME)/Src/Boundary/Make.package
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.rules
