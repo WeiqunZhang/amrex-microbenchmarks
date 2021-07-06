@@ -64,8 +64,8 @@ for line in stdout0.decode().split('\n'):
         machineSuffix = line.split()[2]
 
 executable = './main.'+machineSuffix+'.ex'
-if args.device == 'hip':
-    executable = 'AMD_DIRECT_DISPATCH=1 ' + executable
+#if args.device == 'hip':
+#    executable = 'AMD_DIRECT_DISPATCH=1 ' + executable
 
 for test in tests:
     os.chdir(os.path.join(TOP,test['dir']))

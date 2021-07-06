@@ -16,6 +16,11 @@ BL_NO_FORT = TRUE
 
 TINY_PROFILE = FALSE
 
+ifeq ($(USE_HIP),TRUE)
+  XTRA_CXXFLAGS = -ffast-math -fhonor-nans -fhonor-infinites
+  XTRA_CFLAGS   = -ffast-math -fhonor-nans -fhonor-infinites
+endif
+
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
 
 include ./Make.package
