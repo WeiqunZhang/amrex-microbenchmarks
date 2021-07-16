@@ -32,7 +32,7 @@ ifeq ($(strip $(programs)),)
   programs += aos_simple/main
   programs += aos_shared/main
   programs += gsrb/main
-  programs += parser
+  programs += parser/main
 endif
 
 include $(AMREX_HOME)/Tools/GNUMake/Make.defs
