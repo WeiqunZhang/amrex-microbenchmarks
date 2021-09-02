@@ -6,21 +6,40 @@ using namespace amrex;
 
 static void test (MultiFab const& rhs, MultiFab& mfa, MultiFab& mfb)
 {
-    for (MFIter mfi(mfa); mfi.isValid(); ++mfi) {
-        const Box& bx = mfi.validbox();
-        const Box& gbx = mfi.fabbox();
-        Array4<Real const> const& r = rhs.const_array(mfi);
-        Array4<Real> const& a = mfa.array(mfi);
-        Array4<Real> const& b = mfb.array(mfi);
-        amrex::ParallelFor(gbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    if (rhs.isFusingCandidate()) {
+        auto const& rhsma = rhs.const_arrays();
+        auto const& ama = mfa.arrays();
+        auto const& bma = mfb.arrays();
+        amrex::ParallelFor(mfa, IntVect(1),
+        [=] AMREX_GPU_DEVICE (int bno, int i, int j, int k) noexcept
         {
-            b(i,j,k) = a(i,j,k);
+            bma[bno](i,j,k) = ama[bno](i,j,k);
         });
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+        amrex::ParallelFor(mfa,
+        [=] AMREX_GPU_DEVICE (int bno, int i, int j, int k) noexcept
         {
-            a(i,j,k) += (2./3.) * r(i,j,k) /
+            auto const& b = bma[bno];
+            ama[bno](i,j,k) += (2./3.) * rhsma[bno](i,j,k) /
                 (b(i-1,j,k)+b(i+1,j,k)+b(i,j-1,k)+b(i,j+1,k)+b(i,j,k-1)+b(i,j,k+1)-6.*b(i,j,k));
         });
+        Gpu::streamSynchronize();
+    } else {
+        for (MFIter mfi(mfa); mfi.isValid(); ++mfi) {
+            const Box& bx = mfi.validbox();
+            const Box& gbx = mfi.fabbox();
+            Array4<Real const> const& r = rhs.const_array(mfi);
+            Array4<Real> const& a = mfa.array(mfi);
+            Array4<Real> const& b = mfb.array(mfi);
+            amrex::ParallelFor(gbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                b(i,j,k) = a(i,j,k);
+            });
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                a(i,j,k) += (2./3.) * r(i,j,k) /
+                    (b(i-1,j,k)+b(i+1,j,k)+b(i,j-1,k)+b(i,j+1,k)+b(i,j,k-1)+b(i,j,k+1)-6.*b(i,j,k));
+            });
+        }
     }
 }
 

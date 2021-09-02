@@ -10,16 +10,29 @@ static void test (MultiFab& mf, ParserExecutor<3> const& exe, Geometry const& ge
 {
     auto const problo = geom.ProbLoArray();
     auto const cellsize = geom.CellSizeArray();
-    for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
-        const Box& vbx = mfi.validbox();
-        auto const& fab = mf.array(mfi);
-        amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    if (mf.isFusingCandidate()) {
+        auto const& ma = mf.arrays();
+        amrex::ParallelFor(mf,
+        [=] AMREX_GPU_DEVICE (int bno, int i, int j, int k) noexcept
         {
             Real x = (i+0.5)*cellsize[0] + problo[0];
             Real y = (j+0.5)*cellsize[1] + problo[1];
             Real z = (k+0.5)*cellsize[2] + problo[2];
-            fab(i,j,k) = exe(x,y,z);
+            ma[bno](i,j,k) = exe(x,y,z);
         });
+        Gpu::streamSynchronize();
+    } else {
+        for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
+            const Box& vbx = mfi.validbox();
+            auto const& fab = mf.array(mfi);
+            amrex::ParallelFor(vbx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                Real x = (i+0.5)*cellsize[0] + problo[0];
+                Real y = (j+0.5)*cellsize[1] + problo[1];
+                Real z = (k+0.5)*cellsize[2] + problo[2];
+                fab(i,j,k) = exe(x,y,z);
+            });
+        }
     }
 }
 

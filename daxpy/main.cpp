@@ -6,15 +6,26 @@ using namespace amrex;
 
 static void test (MultiFab& mfa, MultiFab const& mfb)
 {
-    for (MFIter mfi(mfa); mfi.isValid(); ++mfi) {
-        const Box& bx = mfi.validbox();
-        Array4<Real const> const& b = mfb.const_array(mfi);
-        Array4<Real> const& a = mfa.array(mfi);
-        BL_PROFILE("daxpy"); // for NVIDIA Nsight Compute
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    if (mfa.isFusingCandidate()) {
+        auto const& maa = mfa.arrays();
+        auto const& mab = mfb.arrays();
+        amrex::ParallelFor(mfa,
+        [=] AMREX_GPU_DEVICE (int bno, int i, int j, int k) noexcept
         {
-            a(i,j,k) = a(i,j,k) + 0.5*b(i,j,k);
+            maa[bno](i,j,k) = maa[bno](i,j,k) + 0.5*mab[bno](i,j,k);
         });
+        Gpu::streamSynchronize();
+    } else {
+        for (MFIter mfi(mfa); mfi.isValid(); ++mfi) {
+            const Box& bx = mfi.validbox();
+            Array4<Real const> const& b = mfb.const_array(mfi);
+            Array4<Real> const& a = mfa.array(mfi);
+            BL_PROFILE("daxpy"); // for NVIDIA Nsight Compute
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                a(i,j,k) = a(i,j,k) + 0.5*b(i,j,k);
+            });
+        }
     }
 }
 

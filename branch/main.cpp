@@ -7,21 +7,38 @@ using namespace amrex;
 
 static void test (MultiFab& mf)
 {
-    for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
-        const Box& bx = mfi.validbox();
-        Array4<Real> const& a = mf.array(mfi);
-        BL_PROFILE("branch"); // for NVIDIA Nsight compute
-        amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    if (mf.isFusingCandidate()) {
+        auto const& ma = mf.arrays();
+        amrex::ParallelFor(mf,
+        [=] AMREX_GPU_DEVICE (int b, int i, int j, int k) noexcept
         {
-            Real y = a(i,j,k);
+            Real y = ma[b](i,j,k);
             Real x = 1.0;
             Real dx;
             do {
                 dx = -(x*x-y) / (2.*x);
                 x += dx;
             } while(amrex::Math::abs(dx) < 1.e-14);
-            a(i,j,k) = x;
+            ma[b](i,j,k) = x;
         });
+        Gpu::streamSynchronize();
+    } else {
+        for (MFIter mfi(mf); mfi.isValid(); ++mfi) {
+            const Box& bx = mfi.validbox();
+            Array4<Real> const& a = mf.array(mfi);
+            BL_PROFILE("branch"); // for NVIDIA Nsight compute
+            amrex::ParallelFor(bx, [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                Real y = a(i,j,k);
+                Real x = 1.0;
+                Real dx;
+                do {
+                    dx = -(x*x-y) / (2.*x);
+                    x += dx;
+                } while(amrex::Math::abs(dx) < 1.e-14);
+                a(i,j,k) = x;
+            });
+        }
     }
 }
 

@@ -10,16 +10,28 @@ namespace {
 
 static void test (FabArray<BaseFab<GpuArray<Real,N> > >& stencil)
 {
-    for (MFIter mfi(stencil); mfi.isValid(); ++mfi) {
-        Box const& bx = mfi.validbox();
-        auto const& aos = stencil.array(mfi);
-        amrex::ParallelFor(bx,
-        [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+    if (stencil.isFusingCandidate()) {
+        auto const& ma = stencil.arrays();
+        amrex::ParallelFor(stencil,
+        [=] AMREX_GPU_DEVICE (int b, int i, int j, int k) noexcept
         {
             for (int n = 0; n < N; ++n) {
-                aos(i,j,k)[n] = -Real(n);
+                ma[b](i,j,k)[n] = -Real(n);
             }
         });
+        Gpu::streamSynchronize();
+    } else {
+        for (MFIter mfi(stencil); mfi.isValid(); ++mfi) {
+            Box const& bx = mfi.validbox();
+            auto const& aos = stencil.array(mfi);
+            amrex::ParallelFor(bx,
+            [=] AMREX_GPU_DEVICE (int i, int j, int k) noexcept
+            {
+                for (int n = 0; n < N; ++n) {
+                    aos(i,j,k)[n] = -Real(n);
+                }
+            });
+        }
     }
 }
 
