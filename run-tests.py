@@ -31,17 +31,6 @@ ntrys = 3
 
 TOP = os.getcwd()
 
-if args.clean:
-    for test in tests:
-        os.chdir(os.path.join(TOP,test['dir']))
-        command = 'make clean'
-        p0 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              shell=True)
-        stdout0, stderr0 = p0.communicate()
-        p0.stdout.close()
-        p0.stderr.close()
-    sys.exit(0)
-
 command = 'make '
 if (args.device == 'cuda'):
     command += 'USE_CUDA=TRUE'
@@ -55,6 +44,17 @@ else:
 if args.single_precision:
     command += ' PRECISION=FLOAT'
 command += ' print-machineSuffix'
+
+if args.clean:
+    for test in tests:
+        os.chdir(os.path.join(TOP,test['dir']))
+        command = command + ' clean'
+        p0 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              shell=True)
+        stdout0, stderr0 = p0.communicate()
+        p0.stdout.close()
+        p0.stderr.close()
+    sys.exit(0)
 
 p0 = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 stdout0, stderr0 = p0.communicate()

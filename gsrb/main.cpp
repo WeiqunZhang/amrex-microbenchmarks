@@ -118,7 +118,7 @@ static void test (MultiFab& sol, MultiFab const& rhs, MultiFab const& acoef,
         const auto& f4ma = f4.const_arrays();
         const auto& f5ma = f5.const_arrays();
 
-        amrex::ParallelFor(sol, nc,
+        amrex::ParallelFor(sol, IntVect(0), nc,
         [=] AMREX_GPU_DEVICE (int bno, int i, int j, int k, int n) noexcept
         {
             Box vbx(ama[bno]);
