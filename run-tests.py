@@ -6,7 +6,7 @@ if len(sys.argv) < 2:
     print("Device type not specified.  Run `./run-tests.py -h` for options")
 
 parser = argparse.ArgumentParser(description="GPU tests")
-parser.add_argument("--device", type=str, default="", choices=['cuda','hip','dpcpp'])
+parser.add_argument("--device", type=str, default="", choices=['cuda','hip','dpcpp','cpu'])
 parser.add_argument("--single_precision", action="store_true")
 parser.add_argument("--clean", action="store_true")
 args = parser.parse_args(sys.argv[1:])
@@ -38,6 +38,8 @@ elif (args.device == 'hip'):
     command += 'USE_HIP=TRUE'
 elif (args.device == 'dpcpp'):
     command += 'USE_DPCPP=TRUE'
+elif (args.device == 'cpu'):
+    pass
 else:
     print("Device not supported")
     sys.exit(1)
