@@ -13,8 +13,8 @@ x = arange(len(tests))
 width = 0.35
 
 fig, ax = plt.subplots()
-rects1 = ax.bar(x - width/2, tcuda/tcuda, width, label='AMD')
-rects2 = ax.bar(x + width/2, tcuda/thip , width, label='NVIDIA')
+rects1 = ax.bar(x - width/2, tcuda/tcuda, width, label='NVIDIA')
+rects2 = ax.bar(x + width/2, tcuda/thip , width, label='AMD')
 
 plt.ylim(0,1.45)
 
